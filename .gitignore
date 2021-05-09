@@ -1,3 +1,7 @@
 .idea
 example/
 minicompiler/
+.DS_Store
+lex.yy.c
+parser.tab.c
+parser.tab.h
