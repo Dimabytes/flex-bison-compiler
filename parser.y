@@ -14,17 +14,13 @@
 		int val;
 	} symbol[53];
 
-
 %}
-
-
 
 %union{
 	    int no;
 	    char var[100];
 	    char code[100];
     }
-
 
 	%token <var> id
 	%token <no> num
@@ -34,7 +30,7 @@
 
 
 
-	%start start   /* Start Symbol of the Grammar */
+	%start start
 
 	%left and or
 	%left '>' '<' eq ne ge le '?' ':'
@@ -94,23 +90,16 @@ start : print '(' exp ')' ';'		{
 				}
         			;
 
-		/* <------------- PRINT STATEMENT -------------> */
-
 print_statement : print '(' exp ')' ';' {
                     sprintf(buffer, "printf(\"%%d\", %s);\n",$3);
   					strcpy($$,buffer);
   }
-
-		/* <---------------- WHILE STATEMENT ---------------------------->   */
 
 while_statement : WHILE '(' exp ')' '{' statement '}'
 				{
 					 sprintf(buffer,"while (%s) {\n%s}", $3, $6);
 					 strcpy($$,buffer);
 				}
-
-		/* <----------------- IF AND IF-ELSE CONSTRUCT ------------->  */
-
 
 condn :  IF '(' exp ')' '{' statement '}'
      				{
@@ -123,9 +112,6 @@ condn :  IF '(' exp ')' '{' statement '}'
 				     strcpy($$,buffer);
 				}
 				;
-
-
-		/*<----------- STATEMENTS ---------------------> */
 
 statement : assignment statement
 	  			{
@@ -140,13 +126,9 @@ statement : assignment statement
 			|';' { strcpy($$,"");	}
 			;
 
-		/* <------------ ASSIGNMENT STATEMENT ---------> */
-
 assignment : let id '=' exp ';' { sprintf(buffer,"int %s = %s;\n",$2,$4); strcpy($$,buffer); }
             | id '=' exp ';' { sprintf(buffer,"%s = %s;\n",$1,$3); strcpy($$,buffer); }
 
-
-		/*<-------------- EXPRESSION -----------> */
 exp    	: term                 { strcpy($$,$1); }
        	| exp '+' exp          { sprintf(buffer,"%s + %s", $1, $3); strcpy($$,buffer)}
        	| exp '-' exp          { sprintf(buffer,"%s - %s", $1, $3); strcpy($$,buffer)}
@@ -165,8 +147,6 @@ exp    	: term                 { strcpy($$,$1); }
 
 	;
 
-
-		/*<------------- TERMS ----------> */
 term   	: num                {itoa($1, buffer); strcpy($$,buffer)}
 	|id			{strcpy($$,$1)}
 ;
@@ -189,12 +169,12 @@ term   	: num                {itoa($1, buffer); strcpy($$,buffer)}
  {
      int i, sign;
 
-     if ((sign = n) < 0)  /* записываем знак */
-         n = -n;          /* делаем n положительным числом */
+     if ((sign = n) < 0)
+         n = -n;
      i = 0;
-     do {       /* генерируем цифры в обратном порядке */
-         s[i++] = n % 10 + '0';   /* берем следующую цифру */
-     } while ((n /= 10) > 0);     /* удаляем */
+     do {
+         s[i++] = n % 10 + '0';
+     } while ((n /= 10) > 0);
      if (sign < 0)
          s[i++] = '-';
      s[i] = '\0';
