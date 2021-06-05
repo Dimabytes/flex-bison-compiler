@@ -39,7 +39,6 @@
 
 	%token <var> id
 	%token <no> num
-	%type<var> procid
 	%type <code>condn assignment statement while_statement
 	%token print EXIT IF ELSE WHILE DEF comma let
 	%type <no>  start exp  term
@@ -185,12 +184,6 @@ exp    	: term                 { {$$ = $1;}                    /*fprintf(yyout,"
 term   	: num                {$$ = $1;}
 	|id			{$$=getid($1);}
 ;
-
-		/* <------- FUNCTION NAME IDENTIFIER ----------> */
-procid : id
-      	 {
-      		 strcpy($$,$1);
-	 }
 
 %%
 
