@@ -10,7 +10,7 @@
 
 	void installid(char s[],int n);    /* Enter symbol and corresponding value to  the symbol table */
 	int getid(char s[]);		   /* Get the value associated with  an identifier */
-
+    char reg[7][10]={"t1","t2","t3","t4","t5","t6"};   /* Temporaries for holding values for IR Code */
 	struct table
     	{
     		char name[10];
@@ -23,11 +23,13 @@
 %union{
 	int no;
 	char var[10];
+	char code[100];
 }
 
     %token <var> id
 	%token <no> num
-	%token PRINT EXIT CONST
+	%type <code> condn statement assignment
+	%token PRINT EXIT IF ELSE
 	%type <no> EXIT start exp term
 
 	%start start
@@ -46,6 +48,8 @@ start	: EXIT ';'		{	exit(0);	}
 
 	| start id '=' exp ';' { installid($2,$4); }
 	| start EXIT ';' { exit(EXIT_SUCCESS);}
+	| condn			{}
+    | start condn		{}
 	;
 
 
@@ -54,14 +58,36 @@ term   	: num                {$$ = $1;}
 	    | id			{$$=getid($1);}
 ;
 
+condn :  IF '(' exp ')' '{' statement '}' {
+ printf("IF");
+    }
+	  |	 IF '(' exp ')'  '{' statement '}' ELSE '{' statement '}'
+			        {
+				     printf("ELSE")
+				}
+				;
+
+statement : assignment statement
+	  			{
+					 strcat($1,$2);
+					 strcpy($$,$1);
+			        }
+			|	assignment		{ { strcpy($$,$1); } }
+			| condn statement {  strcat($1,$2); strcpy($$,$1); }
+			|	condn		{ { strcpy($$,$1); } }
+			|';' { strcpy($$,"");	}
+			;
+
+assignment : id '=' exp ';' { installid($1,$3); }
+
 		/*<-------------- EXPRESSION -----------> */
-exp : term        { {$$ = $1;}               /*fprintf(yyout,"%s := %d + %d;\n ",reg[0],$1,$3);*/ ; }
-    | exp '+' exp          { {$$ = $1 + $3;}               /*fprintf(yyout,"%s := %d + %d;\n ",reg[0],$1,$3);*/ ; }
-    | exp '-' exp          { {$$ = $1 - $3;}               /*fprintf(yyout,"%s := %d - %d;\n ",reg[0],$1,$3);*/ ; }
-	| exp '*' exp	       { {$$ = $1 * $3;}               /*fprintf(yyout,"%s := %d * %d;\n ",reg[0],$1,$3);*/ ; }
-	| exp '/' exp	       { {$$ = $1 / $3;}               /*fprintf(yyout,"%s := %d / %d;\n ",reg[0],$1,$3);*/ ; }
+exp : term        { {$$ = $1;}               fprintf(yyout,"%s := %d;\n ",reg[0],$1); ; }
+    | exp '+' exp          { {$$ = $1 + $3;}               fprintf(yyout,"%s := %d + %d;\n ",reg[0],$1,$3); ; }
+    | exp '-' exp          { {$$ = $1 - $3;}               fprintf(yyout,"%s := %d - %d;\n ",reg[0],$1,$3); ; }
+	| exp '*' exp	       { {$$ = $1 * $3;}               fprintf(yyout,"%s := %d * %d;\n ",reg[0],$1,$3); ; }
+	| exp '/' exp	       { {$$ = $1 / $3;}               fprintf(yyout,"%s := %d / %d;\n ",reg[0],$1,$3); ; }
 	| exp '%'exp		{ {$$ = $1 % $3;}}
-	| '(' exp ')'		{ {$$ = $2;}                   /*fprintf(yyout,"%s := %d;\n ",reg[0],$2); */;}
+	| '(' exp ')'		{ {$$ = $2;}                   fprintf(yyout,"%s := %d;\n ",reg[0],$2);;}
 	;
 
 

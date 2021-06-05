@@ -10,7 +10,8 @@
 "print"                 {   return PRINT;     }
 "exit"			    	{	return EXIT;	}
 "id"			    	{	return id;	}
-"const"			    	{	return CONST;	}
+"if"			    	{	return IF;	}
+"else"			    	{	return ELSE ;	}
 [0-9]+				    {
     yylval.no=atoi(yytext);
     return num;
