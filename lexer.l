@@ -20,9 +20,9 @@
 	*/
 
 %%
-"&"				    { 	return and; 	}
+"&&"				    { 	return and; 	}
 "let"				    { 	return let; 	}
-"|"				    { 	return or; 	}
+"||"				    { 	return or; 	}
 "if"				    {	return IF;	}
 "else"				    {	return ELSE;	}
 "=="			  	    {	return eq;	}
@@ -30,7 +30,6 @@
 "<="			            {	return le;	}
 ">="			  	    {	return ge;	}
 "while"                             {   return WHILE;   }
-"exit"			    	    {	return EXIT;	}
 "console.log"			 	    {	return print;	}
 ","                                 {   return comma;   }
 [0-9]+				    {
